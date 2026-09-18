@@ -1,0 +1,44 @@
+{{define "topbar-left" -}}
+{{ if .HasShows }}
+<div class="tabs">
+    {{- range .Tabs }}
+    <a class="tab-btn{{ if .Active }} active{{ end }}" href="/?tab={{ .Category }}">
+        {{ .Category.Label }}<span class="count">{{ .Count }}</span>
+    </a>
+    {{- end }}
+</div>
+{{ end }}
+{{- end}}
+
+{{define "topbar-nav" -}}
+<a href="/add" class="btn btn-primary">+ Add Show</a>
+<a href="/settings" class="btn">Settings</a>
+{{- end}}
+
+{{define "content" -}}
+{{ if not .Notice.Empty }}{{ template "notice" (notice .Notice) }}{{ end }}
+{{ if not .HasShows }}
+<div class="empty-state">No shows yet. Click "+ Add Show" to get started.</div>
+{{ else if not .Shows }}
+<div class="empty-state">Nothing in {{ .Active.Label }} yet.</div>
+{{ else }}
+<div class="grid">
+    {{- range .Shows }}
+    <a href="/show/{{ .ID }}" class="show-card">
+        {{- with posterURL .PosterPath }}
+        {{/* An <img> rather than a CSS background, so the browser can skip
+             the ones below the fold: a full Finished tab is otherwise a
+             hundred-odd poster requests fired at once. */}}
+        <img class="poster" src="{{ . }}" alt="" loading="lazy" decoding="async">
+        {{- else }}
+        <div class="poster">No image</div>
+        {{- end }}
+        <div class="info">
+            <div class="title">{{ .Name }}</div>
+            <div class="sub">{{ .TMDBStatus }}</div>
+        </div>
+    </a>
+    {{- end }}
+</div>
+{{ end }}
+{{- end}}

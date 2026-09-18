@@ -1,0 +1,24 @@
+services:
+  gotime:
+    build: .
+    volumes:
+      - gotime_data:/data
+    restart: unless-stopped
+    networks:
+      - proxy
+    # No published port: Nginx Proxy Manager reaches the container over the
+    # shared network, as http://gotime:3000. Uncomment to also reach it
+    # directly from the host, e.g. for a first run before the proxy exists.
+    # ports:
+    #   - "3000:3000"
+
+networks:
+  # The network Nginx Proxy Manager is already on. `external: true` means
+  # compose joins it rather than creating it; change the name to match yours
+  # (`docker network ls` if you aren't sure).
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  gotime_data:

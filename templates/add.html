@@ -1,0 +1,21 @@
+{{define "topbar-nav" -}}
+<a href="/" class="btn">← Back</a>
+<a href="/settings" class="btn">Settings</a>
+{{- end}}
+
+{{define "content" -}}
+<form class="form-page" method="post" action="/add">
+    <h2>Add a Show</h2>
+    <p style="color: var(--text-dim); font-size: 13px">
+        Enter a TMDB TV show ID. You can find it in the URL of a show's page on
+        themoviedb.org, e.g. themoviedb.org/tv/<strong>1399</strong>-game-of-thrones.
+    </p>
+    <label for="tmdbId">TMDB ID</label>
+    <input id="tmdbId" name="tmdb_id" type="number" placeholder="e.g. 1399"
+           value="{{ .TMDBID }}" autofocus />
+    <div class="actions">
+        <button class="btn btn-primary" type="submit">Add Show</button>
+    </div>
+    {{ if not .Notice.Empty }}{{ template "notice" (notice .Notice) }}{{ end }}
+</form>
+{{- end}}

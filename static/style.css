@@ -1,0 +1,536 @@
+:root {
+    /* Surfaces */
+    --bg: #0f1115;
+    --bg-card: #1a1d24;
+    --bg-card-hover: #22262f;
+    --bg-input: #12141a;
+    --border: #2a2e38;
+
+    /* Text */
+    --text: #e8e9ec;
+    --text-dim: #9a9ea8;
+    --text-on-accent: #fff;
+
+    /* Accent */
+    --accent: #6c8cff;
+    --accent-hover: #5a7aef;
+    --accent-dim: #3d4a80;
+    --accent-light: #b6c4ff;
+
+    /* Status */
+    --green: #4caf7d;
+    --amber: #d9a441;
+    --red: #e0645a;
+
+    /* Radii */
+    --radius: 10px;
+    --radius-sm: 8px;
+    --radius-pill: 20px;
+
+    /* Motion */
+    --transition: 0.15s;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ---------- Surfaces ---------- */
+/* Shared card/panel treatment. Components below add only their own layout. */
+.tabs,
+.show-card,
+.form-page,
+.show-header,
+.season {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.topbar .left {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.site-title {
+    text-decoration: none;
+    color: inherit;
+    display: inline-flex;
+}
+
+.site-title:hover h1 {
+    color: var(--accent);
+}
+
+.topbar h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: color var(--transition);
+}
+
+.topbar nav {
+    display: flex;
+    gap: 10px;
+}
+
+/* ---------- Tabs ---------- */
+.tabs {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 7px 13px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--text);
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    color: var(--text-on-accent);
+}
+
+.tab-btn .count {
+    font-size: 11px;
+    background: color-mix(in srgb, var(--text-on-accent) 15%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 1px 7px;
+}
+
+.tab-btn:not(.active) .count {
+    background: var(--bg);
+}
+
+/* ---------- Buttons ---------- */
+.topbar a.btn,
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.topbar a.btn:hover,
+.btn:not(:disabled):hover {
+    background: var(--bg-card-hover);
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-on-accent);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-danger {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.btn-danger:hover {
+    background: color-mix(in srgb, var(--red) 10%, transparent);
+}
+
+/* ---------- Layout ---------- */
+main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 28px 60px;
+}
+
+/* ---------- Category grids ---------- */
+.category-section {
+    margin-bottom: 36px;
+}
+
+.category-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+}
+
+.category-section h2 .count {
+    background: var(--bg-card);
+    border-radius: var(--radius-pill);
+    padding: 2px 9px;
+    font-size: 12px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+}
+
+/* ---------- Show cards ---------- */
+.show-card {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+    transition:
+        transform var(--transition),
+        background var(--transition);
+}
+
+.show-card:hover {
+    transform: translateY(-3px);
+    background: var(--bg-card-hover);
+}
+
+.show-card .poster,
+.show-header .poster {
+    aspect-ratio: 2 / 3;
+    background: var(--bg-card-hover) center / cover no-repeat;
+}
+
+/* The div form of this is the "No image" placeholder, which centres its
+   text; the img form is a real poster. */
+.show-card .poster {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.show-card img.poster {
+    display: block;
+    object-fit: cover;
+}
+
+.show-card .info {
+    padding: 10px 12px;
+}
+
+.show-card .info .title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.show-card .info .sub {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.empty-state {
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 20px 0;
+}
+
+/* ---------- Forms ---------- */
+.form-page {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 28px;
+}
+
+.form-page h2 {
+    margin-top: 0;
+}
+
+.form-page label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 16px 0 6px;
+}
+
+.form-page input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.form-page .actions {
+    margin-top: 22px;
+    display: flex;
+    gap: 10px;
+}
+
+.form-page .msg {
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.form-page .msg.error {
+    color: var(--red);
+}
+
+.form-page .msg.success {
+    color: var(--green);
+}
+
+/* ---------- Show detail ---------- */
+.show-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 30px;
+    padding: 22px;
+}
+
+.show-header .poster {
+    width: 150px;
+    min-width: 150px;
+    border-radius: var(--radius-sm);
+}
+
+.show-header .details {
+    flex: 1;
+}
+
+.show-header h2 {
+    margin: 0 0 8px;
+}
+
+.show-header .overview {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+.show-header .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ---------- Status badges ---------- */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    text-transform: capitalize;
+    margin-bottom: 10px;
+}
+
+.status-badge.watchlist {
+    background: var(--accent-dim);
+    color: var(--accent-light);
+}
+
+.status-badge.watching {
+    background: color-mix(in srgb, var(--amber) 20%, transparent);
+    color: var(--amber);
+}
+
+.status-badge.ongoing {
+    background: color-mix(in srgb, var(--green) 20%, transparent);
+    color: var(--green);
+}
+
+.status-badge.finished {
+    background: color-mix(in srgb, var(--text-dim) 20%, transparent);
+    color: var(--text-dim);
+}
+
+/* ---------- Seasons & episodes ---------- */
+.season {
+    position: relative;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.season-header {
+    display: block;
+    padding: 14px 200px 14px 18px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.season-header::-webkit-details-marker {
+    display: none;
+}
+
+.season-header:hover {
+    background: var(--bg-card-hover);
+}
+
+.season-header .name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.season-header .progress {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.season-actions {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+}
+
+.episode-list {
+    border-top: 1px solid var(--border);
+}
+
+.episode-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+.episode-row:last-child {
+    border-bottom: none;
+}
+
+.episode-row .ep-num {
+    width: 34px;
+    color: var(--text-dim);
+}
+
+.episode-row .ep-name {
+    flex: 1;
+}
+
+.episode-row .ep-date {
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+.episode-row input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+/* ---------- Misc ---------- */
+.loading {
+    color: var(--text-dim);
+    padding: 30px;
+    text-align: center;
+}
+
+/* ---------- Added by the Go port ---------- */
+/* Everything above this line is the original stylesheet, minus the two
+ * rules that opened and closed a season by toggling a class: seasons are
+ * <details> elements now, so the browser does that itself. */
+
+/* The category tabs are links, not buttons - the dashboard filters
+ * server-side through ?tab=, so each tab is a real, shareable URL. */
+a.tab-btn {
+    text-decoration: none;
+}
+
+/* Each action is its own form so it works without JavaScript. `contents`
+ * keeps the buttons as direct flex items of .actions, so the row looks the
+ * same as when they were bare buttons. */
+.actions form {
+    display: contents;
+}
+
+/* Inline page message, replacing the alert() calls the show page used to
+ * make. It is always rendered - empty when there is nothing to say - so
+ * that htmx has an element to swap a message into. */
+.msg {
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.msg:empty {
+    display: none;
+}
+
+.msg.error {
+    color: var(--red);
+}
+
+.msg.success {
+    color: var(--green);
+}
+
+/* Sized for the "Refresh All Shows" label so the button doesn't shift while
+ * the request is in flight. */
+.btn.refresh-all {
+    min-width: 150px;
+}
+
+/* While htmx has a request in flight, the control that fired it dims. This
+ * is the whole of the loading feedback: requests are local and fast. */
+.htmx-request,
+.htmx-request .btn {
+    opacity: 0.6;
+}

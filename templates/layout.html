@@ -1,0 +1,22 @@
+{{define "layout" -}}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>GoTime</title>
+        <link rel="stylesheet" href="/static/style.css" />
+        <script src="/static/htmx.min.js" defer></script>
+    </head>
+    <body>
+        <div class="topbar">
+            <div class="left">
+                <a href="/" class="site-title"><h1>📺 GoTime</h1></a>
+                {{- block "topbar-left" . }}{{ end }}
+            </div>
+            <nav>{{ block "topbar-nav" . }}{{ end }}</nav>
+        </div>
+        <main>{{ block "content" . }}{{ end }}</main>
+    </body>
+</html>
+{{- end}}

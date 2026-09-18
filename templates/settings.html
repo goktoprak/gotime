@@ -1,0 +1,36 @@
+{{define "topbar-nav" -}}
+<a href="/" class="btn">← Back</a>
+{{- end}}
+
+{{define "content" -}}
+<div class="form-page">
+    <h2>Settings</h2>
+    {{ if .HasKey }}
+    <p style="color:var(--text-dim); font-size:13px;">A TMDB API key is currently set.</p>
+    <label>TMDB API Key</label>
+    <input type="text" value="{{ .MaskedKey }}" disabled />
+    <div class="actions">
+        <form method="post" action="/shows/refresh-all">
+            <button class="btn refresh-all" type="submit">Refresh All Shows</button>
+        </form>
+        <a class="btn" href="/export" download>Download Backup</a>
+        <form method="post" action="/settings/apikey/delete"
+              onsubmit="return confirm(&#39;Remove the saved TMDB API key? You will need to add it again to fetch or refresh shows.&#39;)">
+            <button class="btn btn-danger" type="submit">Delete API Key</button>
+        </form>
+    </div>
+    {{ else }}
+    <form method="post" action="/settings/apikey">
+        <p style="color:var(--text-dim); font-size:13px;">
+            Paste your TMDB API key (v3 auth). Get one free at themoviedb.org → Settings → API.
+        </p>
+        <label for="apiKey">TMDB API Key</label>
+        <input id="apiKey" name="api_key" type="text" placeholder="your api key" autofocus />
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </form>
+    {{ end }}
+    {{ if not .Notice.Empty }}{{ template "notice" (notice .Notice) }}{{ end }}
+</div>
+{{- end}}

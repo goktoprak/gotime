@@ -1,0 +1,37 @@
+{{/*
+    The pieces htmx swaps in on their own. Each is rendered inline by a page
+    on first load, and again on its own after a mutation - the OOB flag is
+    the only difference, and it is what tells htmx to place the element by
+    its id rather than into the request's target.
+*/}}
+
+{{define "category-badge" -}}
+<div class="status-badge {{ .Category }}" id="category-badge"{{ if .OOB }} hx-swap-oob="true"{{ end }}>{{ .Category.Label }}</div>
+{{- end}}
+
+{{define "season-progress" -}}
+<div class="progress" id="season-progress-{{ .ID }}"{{ if .OOB }} hx-swap-oob="true"{{ end }}>{{ .WatchedCount }} / {{ .TotalCount }} watched</div>
+{{- end}}
+
+{{define "episode-list" -}}
+<div class="episode-list" id="episodes-{{ .ID }}"{{ if .OOB }} hx-swap-oob="true"{{ end }}>
+    {{- range .Episodes }}
+    {{ template "episode-row" . }}
+    {{- end }}
+</div>
+{{- end}}
+
+{{define "episode-row" -}}
+<div class="episode-row" id="episode-{{ .ID }}">
+    <input type="checkbox" {{ if .Watched }}checked{{ end }}
+           hx-post="/episodes/{{ .ID }}/toggle" hx-swap="none"
+           aria-label="Watched" />
+    <span class="ep-num">E{{ .EpisodeNumber }}</span>
+    <span class="ep-name">{{ .DisplayName }}</span>
+    <span class="ep-date">{{ .AirDate }}</span>
+</div>
+{{- end}}
+
+{{define "notice" -}}
+<div class="{{ .Class }}" id="notice"{{ if .OOB }} hx-swap-oob="true"{{ end }}>{{ .Text }}</div>
+{{- end}}

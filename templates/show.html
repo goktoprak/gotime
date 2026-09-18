@@ -1,0 +1,53 @@
+{{define "topbar-nav" -}}
+<a href="/" class="btn">← Back</a>
+<a href="/settings" class="btn">Settings</a>
+{{- end}}
+
+{{define "content" -}}
+{{ with .Detail }}
+<div class="show-header"{{ with backdropURL .BackdropPath }} style="background-image:linear-gradient(90deg, rgba(26,29,36,1) 30%, rgba(26,29,36,0.6)), url('{{ . }}'); background-size:cover; background-position:center;"{{ end }}>
+    <div class="poster"{{ with posterURL .PosterPath }} style="background-image:url('{{ . }}')"{{ end }}></div>
+    <div class="details">
+        {{ template "category-badge" (badge .Show) }}
+        <h2>{{ .Name }}</h2>
+        <div class="overview">{{ .Overview }}</div>
+        <div class="actions">
+            <form method="post" action="/shows/{{ .ID }}/refresh">
+                <button class="btn" type="submit">Refresh Metadata</button>
+            </form>
+            <form method="post" action="/shows/{{ .ID }}/mark-watched"
+                  hx-post="/shows/{{ .ID }}/mark-watched" hx-swap="none">
+                <button class="btn" type="submit">Mark All Watched</button>
+            </form>
+            <form method="post" action="/shows/{{ .ID }}/delete"
+                  onsubmit="return confirm('Delete this show and all its watched progress?')">
+                <button class="btn btn-danger" type="submit">Delete Show</button>
+            </form>
+        </div>
+        {{ template "notice" (notice $.Notice) }}
+    </div>
+</div>
+
+<div id="seasons">
+    {{- range .Seasons }}
+    <div class="season">
+        <details>
+            <summary class="season-header">
+                <div class="name">{{ .DisplayName }}</div>
+                {{ template "season-progress" (seasonView .) }}
+            </summary>
+            {{ template "episode-list" (seasonView .) }}
+        </details>
+        <form class="season-actions" method="post" action="/seasons/{{ .ID }}/mark-watched"
+              hx-post="/seasons/{{ .ID }}/mark-watched" hx-swap="none">
+            <button class="btn mark-season-btn" type="submit">Mark season watched</button>
+        </form>
+    </div>
+    {{- else }}
+    <div class="empty-state">
+        No seasons yet. Try "Refresh Metadata" to pull them from TMDB.
+    </div>
+    {{- end }}
+</div>
+{{ end }}
+{{- end}}

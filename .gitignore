@@ -1,0 +1,6 @@
+gotime.db
+gotime.db-shm
+gotime.db-wal
+gotime
+
+.DS_Store
