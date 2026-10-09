@@ -226,12 +226,18 @@ func (t *TMDB) FetchShow(ctx context.Context, tmdbID int64, apiKey string) (*Fet
 			mu.Lock()
 			defer mu.Unlock()
 			if err != nil {
-				if firstErr == nil {
-					firstErr = err
-					// Nothing partial is usable, so stop the rest early.
-					cancel()
+				var apiErr *tmdbError
+				// A season TMDB lists but has no page for yet - one
+				// announced before any episodes exist - is not a failure.
+				// The season is still tracked, just with no episodes.
+				if !errors.As(err, &apiErr) || apiErr.StatusCode != http.StatusNotFound {
+					if firstErr == nil {
+						firstErr = err
+						// Nothing partial is usable, so stop the rest early.
+						cancel()
+					}
+					return
 				}
-				return
 			}
 			episodes := make([]FetchedEpisode, len(season.Episodes))
 			for j, e := range season.Episodes {

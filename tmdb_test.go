@@ -14,8 +14,8 @@ import (
 )
 
 // fakeTMDB serves the shape of the real API for one show with `seasons`
-// seasons of two episodes each.
-func fakeTMDB(t *testing.T, seasons int, failSeason int) (*TMDB, *int32) {
+// seasons of two episodes each. failSeason, when not -1, answers failStatus.
+func fakeTMDB(t *testing.T, seasons int, failSeason int, failStatus int) (*TMDB, *int32) {
 	t.Helper()
 	var requests int32
 
@@ -29,7 +29,7 @@ func fakeTMDB(t *testing.T, seasons int, failSeason int) (*TMDB, *int32) {
 		var number int
 		if n, _ := fmt.Sscanf(r.URL.Path, "/tv/1399/season/%d", &number); n == 1 {
 			if number == failSeason {
-				http.Error(w, `{"status_message":"Not found"}`, http.StatusNotFound)
+				http.Error(w, `{"status_message":"Error"}`, failStatus)
 				return
 			}
 			fmt.Fprintf(w, `{"episodes":[
@@ -61,7 +61,7 @@ func fakeTMDB(t *testing.T, seasons int, failSeason int) (*TMDB, *int32) {
 func TestFetchShowReadsEverySeasonInOrder(t *testing.T) {
 	// More seasons than may be in flight at once, so the ordering below is
 	// a real claim about the concurrency and not an accident.
-	tmdb, _ := fakeTMDB(t, maxInFlight*3, -1)
+	tmdb, _ := fakeTMDB(t, maxInFlight*3, -1, 0)
 
 	show, err := tmdb.FetchShow(context.Background(), 1399, "good-key")
 	if err != nil {
@@ -97,22 +97,46 @@ func TestFetchShowReadsEverySeasonInOrder(t *testing.T) {
 	}
 }
 
-// One failed season fails the whole fetch: the caller writes all of it or
-// none of it, so a partial result would be worse than an error.
+// One season TMDB lists but has no page for yet - one announced before any
+// episodes exist - is not a failure: the season is still tracked, just with
+// no episodes.
+func TestAMissingSeasonPageIsTrackedEmpty(t *testing.T) {
+	tmdb, requests := fakeTMDB(t, 4, 2, http.StatusNotFound)
+
+	show, err := tmdb.FetchShow(context.Background(), 1399, "good-key")
+	if err != nil {
+		t.Fatalf("fetching: %v", err)
+	}
+	if len(show.Seasons) != 4 {
+		t.Fatalf("got %d seasons, want 4", len(show.Seasons))
+	}
+	if got := show.Seasons[2]; got.Number != 2 || len(got.Episodes) != 0 {
+		t.Errorf("season 2 = %+v, want number 2 with no episodes", got)
+	}
+	if len(show.Seasons[1].Episodes) != 2 {
+		t.Errorf("season 1 has %d episodes, want 2 - the fetch must not stop early", len(show.Seasons[1].Episodes))
+	}
+	if got := atomic.LoadInt32(requests); got != 5 {
+		t.Errorf("made %d requests, want 5 - a missing page must not cancel the rest", got)
+	}
+}
+
+// Any other failed season fails the whole fetch: the caller writes all of it
+// or none of it, so a partial result would be worse than an error.
 func TestOneFailedSeasonFailsTheFetch(t *testing.T) {
-	tmdb, _ := fakeTMDB(t, 4, 2)
+	tmdb, _ := fakeTMDB(t, 4, 2, http.StatusInternalServerError)
 
 	_, err := tmdb.FetchShow(context.Background(), 1399, "good-key")
 	if err == nil {
 		t.Fatal("expected an error")
 	}
-	if !strings.Contains(err.Error(), "404") {
+	if !strings.Contains(err.Error(), "500") {
 		t.Errorf("error = %v, want it to mention the status", err)
 	}
 }
 
 func TestARejectedKeyIsReported(t *testing.T) {
-	tmdb, requests := fakeTMDB(t, 2, -1)
+	tmdb, requests := fakeTMDB(t, 2, -1, 0)
 
 	err := tmdb.ValidateKey(context.Background(), "bad-key")
 	if err == nil {
@@ -132,7 +156,7 @@ func TestARejectedKeyIsReported(t *testing.T) {
 }
 
 func TestAGoodKeyValidates(t *testing.T) {
-	tmdb, _ := fakeTMDB(t, 1, -1)
+	tmdb, _ := fakeTMDB(t, 1, -1, 0)
 	if err := tmdb.ValidateKey(context.Background(), "good-key"); err != nil {
 		t.Errorf("validating: %v", err)
 	}
